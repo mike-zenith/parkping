@@ -1,0 +1,111 @@
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.0/mapsjs-ui.css" />
+    <link rel="stylesheet" href="vendor/custombox/custombox.min.css">
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+
+    <!---->
+    <script type="text/javascript" charset="UTF-8" src="https://js.api.here.com/v3/3.0/mapsjs-core.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="https://js.api.here.com/v3/3.0/mapsjs-service.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="https://js.api.here.com/v3/3.0/mapsjs-ui.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="https://js.api.here.com/v3/3.0/mapsjs-mapevents.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="https://cdn.pubnub.com/pubnub-3.15.2.min.js"></script>
+
+    <!---->
+    <script src="vendor/custombox/custombox.min.js"></script>
+    <script src="vendor/reqwest/reqwest.min.js"></script>
+    <script src="vendor/monster/monster.min.js"></script>
+    <!---->
+
+    <script type="text/javascript" charset="UTF-8" src="javascript/core.js"></script>
+</head>
+<body>
+<div id="mapContainer"></div>
+
+<div id="loginFormModal" class="panel panel-default" style="display: none">
+    <div class="panel-heading">Sign in</div>
+    <div class="panel-body">
+
+        <form class="form-inline" id="sendInvitationForm">
+            <div class="form-group">
+                <label for="sendInvitationName">Name</label>
+                <input type="text" class="form-control" id="sendInvitationName" placeholder="Peter ParkPing">
+            </div>
+            <div class="form-group">
+                <label for="sendInvitationEmail">Email</label>
+                <input type="email" class="form-control" id="sendInvitationEmail" placeholder="peter-parkping@gmail.com">
+            </div>
+            <button type="submit" class="btn btn-default">Send invitation</button>
+        </form>
+    </div>
+</div>
+
+<div id="spinner" style="display: none">
+    <img src="img/gear.gif">
+</div>
+
+<script type="template" id="template-bubble">
+    <img src="{{picture}}" />
+    <a class="pull-left text-primary" href="#" class="bubbleMore"><i class="glyphicon glyphicon-chevron-right"></i></a>
+</script>
+
+<script>
+    function ready(fn) {
+        if (document.readyState != 'loading'){
+            fn();
+        } else {
+            document.addEventListener('DOMContentLoaded', fn);
+        }
+    }
+
+    ready(function () {
+
+        app.configure({
+            pubnub: {
+                credentials: {
+                    publish_key: "demo",
+                    subscribe_key: "demo"
+                },
+                channels: {
+                    spots: "spot.update"
+                }
+            },
+            url: {
+                api: "http://api.parkping.foo:3000"
+            },
+            storeLogin: function (user) {
+                app.cookie.set("parkping-user", user.id);
+            },
+            destroyLogin: function (user) {
+                app.cookie.remove("parkping-user");
+            },
+            retrieveLogin: function () {
+                return app.cookie.get("parkping-user");
+            },
+            selector: {
+                mapContainer: function () { return document.getElementById("mapContainer"); },
+                marker: ".marker",
+                bubbleMore: ".bubbleMore"
+            },
+            here: {
+                center: { lat: 52.53075, lng: 13.4051 },
+                marker: {
+                    iconFile: ""
+                },
+                platform: {
+                    app_id: 'iscVZ1UlIh9aHpiOVbd9',
+                    app_code: '2mkC6jGUH6PVDb6rBGI1ug',
+                    useCIT: true
+                }
+            }
+        });
+
+        app.start();
+    });
+</script>
+</body>
+</html>

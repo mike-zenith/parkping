@@ -1,0 +1,11 @@
+server {
+
+  listen 80;
+  server_name parkping.foo;
+  access_log /var/log/nginx/parkping.log;
+  charset utf-8;
+
+  location / {
+    root /www/webapi/public;
+  }
+}

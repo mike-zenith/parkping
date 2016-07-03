@@ -1,0 +1,10 @@
+{
+  "apps":[
+    {
+      "name": "api",
+      "instances": 0,
+      "exec_mode": "cluster",
+      "script": "./src/api.index.js"
+    }
+  ]
+}

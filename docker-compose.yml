@@ -1,0 +1,35 @@
+api:
+  build: ./api
+  volumes:
+    - "./api:/www/api"
+  ports:
+    - "3030:3000"
+  links:
+    - "mysql:mysql"
+
+webapi:
+  restart: always
+  build: ./webapi
+  ports:
+    - "80:80"
+    - "443:443"
+  volumes:
+    - "./webapi/src:/www/webapi"
+  links:
+    - api:api
+
+#redis:
+#  image: redis
+#  ports:
+#    - "6379"
+
+mysql:
+  image: mysql
+  ports:
+    - "3306:3306"
+  environment:
+    MYSQL_ROOT_PASSWORD: 123456
+    MYSQL_USER: dev
+    MYSQL_PASSWORD: 123456
+    MYSQL_DATABASE: myapp
+
