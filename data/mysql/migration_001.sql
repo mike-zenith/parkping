@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS parkping;
+
+USE parkping;
+
 CREATE TABLE `user` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(45) NOT NULL,
@@ -38,9 +42,7 @@ CREATE TABLE `bookings` (
   `spot_id` INT UNSIGNED NOT NULL,
   `startDate` TIMESTAMP NOT NULL,
   `endDate` TIMESTAMP NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  INDEX `spotIdDates` (`spot_id` ASC, `startDate` ASC)
 );
 
-ALTER TABLE `parkping`.`bookings`
-DROP INDEX `spotIdDates` ,
-ADD INDEX `spotIdDates` (`spot_id` ASC, `startDate` ASC);

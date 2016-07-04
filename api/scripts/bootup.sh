@@ -5,5 +5,5 @@ if [ ! -d "/www/api/node_modules" ]; then
     npm install
 fi
 
-echo "running in $ENVIRONMENT mode"
-node /www/api/src/api.index.js
+echo "running in $API_ENV mode"
+node src/api.index.js

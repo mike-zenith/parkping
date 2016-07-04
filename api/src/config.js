@@ -1,7 +1,5 @@
-const REDIS_HOST = process.env.REDIS_PORT_6379_TCP_ADDR || 'localhost';
 const API_PORT = process.env.PORT || 3000;
 const API_HOST = process.env.HOST || "api";
-const REDIS_PORT = process.env.REDIS_PORT_6379_TCP_PORT || 6379;
 const TP_USERNAME = process.env.TP_USERNAME || "admin";
 const TP_PASSWORD = process.env.TP_PASSWORD || "admin";
 
@@ -14,7 +12,7 @@ module.exports = {
         publish_key: process.env.PUBNUB_PUB_KEY || "demo",
         subscribe_key: process.env.PUBNUB_SUB_KEY || "demo"
     },
-    test: process.env.ENVIRONMENT === "test",
+    test: process.env.API_ENV === "test",
     targetprocess: {
         credentials: {
             domain: process.env.TP_DOMAIN || "localhost",
@@ -31,10 +29,6 @@ module.exports = {
     },
     api: {
         port: API_PORT
-    },
-    redis: {
-        port: REDIS_PORT,
-        host: REDIS_HOST
     },
     mysql: {
         host: process.env.DB_PORT_3306_TCP_ADDR || "localhost",

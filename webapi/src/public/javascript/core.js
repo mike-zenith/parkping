@@ -201,6 +201,13 @@
     };
 
     app.modal = Custombox;
+    app.modal.defaults = {
+        escKey: false,
+        overlayClose: false
+    };
+    app.modal.open = function (opts) {
+        return Custombox.apply(Custombox, Object.assign({}, app.modal.defaults, opts || {}));
+    };
 
     app.spotFinderService = {};
     app.spotFinderService.findByFilter = function findByFilter (filter) {
@@ -241,30 +248,3 @@
     window.app = app;
 
 })(window, window.H, window.reqwest, window.Custombox, window.monster);
- /*
-
-// Create the default UI components
-var ui = H.ui.UI.createDefault(map, defaultLayers);
-
-// Create an icon, an object holding the latitude and longitude, and a marker:
-var icon = new H.map.Icon('./here/img/icon_30px.png'),
-    coords = {lat: 52.593, lng: 13.4051},
-    marker = new H.map.Marker(coords, {icon:icon});
-
-map.addObject(marker);
-// map.setCenter(coords);
-
-var icon2 = new H.map.Icon('./here/img/icon_selected_30px.png'),
-    coords2 = {lat: 52.53073, lng: 13.4052},
-    marker2 = new H.map.Marker(coords2, {icon:icon2});
-
-// Add the marker to the map and center the map at the location of the marker:
-map.addObject(marker2);
-//map.setCenter(coords2);
-navigator.geolocation.getCurrentPosition(showPosition);
-function showPosition(position) {
-    console.log("Latitude: "  position.coords.latitude
-    "<br>Longitude: "  position.coords.longitude);
-}
-</script>
-*/
