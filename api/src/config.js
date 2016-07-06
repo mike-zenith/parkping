@@ -31,10 +31,10 @@ module.exports = {
         port: API_PORT
     },
     mysql: {
-        host: process.env.DB_PORT_3306_TCP_ADDR || "localhost",
-        port: process.env.DB_PORT_3306_TCP_PORT || 3306,
-        username: process.env.DB_ENV_MYSQL_USER || "root",
-        password: process.env.DB_ENV_MYSQL_PASSWORD || "rootroot",
-        database: process.env.DB_ENV_MYSQL_DATABASE || "parkping"
+        host: process.env.MYSQL_PORT_3306_TCP_ADDR || "localhost",
+        port: process.env.MYSQL_PORT_3306_TCP_PORT || 3306,
+        username: process.env.MYSQL_ENV_MYSQL_USER || "root",
+        password: process.env.MYSQL_ENV_MYSQL_PASSWORD || "rootroot",
+        database: process.env.MYSQL_ENV_MYSQL_DATABASE || "parkping"
     }
 };

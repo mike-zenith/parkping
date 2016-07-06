@@ -16,12 +16,13 @@
     <script type="text/javascript" charset="UTF-8" src="https://cdn.pubnub.com/pubnub-3.15.2.min.js"></script>
 
     <!---->
-    <script src="vendor/custombox/custombox.min.js"></script>
+    <script src="vendor/custombox/custombox.js"></script>
     <script src="vendor/reqwest/reqwest.min.js"></script>
     <script src="vendor/monster/monster.min.js"></script>
     <!---->
 
-    <script type="text/javascript" charset="UTF-8" src="javascript/core.js"></script>
+    <link rel="stylesheet" href="css/main.css">
+    <script type="text/javascript" charset="UTF-8" src="javascript/core.js?v="></script>
 </head>
 <body>
 <div id="mapContainer"></div>
@@ -45,7 +46,6 @@
 </div>
 
 <div id="spinner" style="display: none">
-    <img src="img/gear.gif">
 </div>
 
 <script type="template" id="template-bubble">
@@ -75,7 +75,7 @@
                 }
             },
             url: {
-                api: "http://api.parkping.foo:3030"
+                api: "http://api.parkping.foo"
             },
             storeLogin: function (user) {
                 app.cookie.set("parkping-user", user.id);
@@ -83,8 +83,18 @@
             destroyLogin: function (user) {
                 app.cookie.remove("parkping-user");
             },
-            retrieveLogin: function () {
-                return app.cookie.get("parkping-user");
+            autoLogin: function () {
+                var uid = app.cookie.get("parkping-user");
+                if (!uid) {
+                    return;
+                }
+                app.spinner.on("autoLogin");
+                app.authService.getUserById(uid).then(function (user) {
+                    app.spinner.off("autoLogin");
+                    app.login(user);
+                }).catch(function () {
+                    app.spinner.off("autoLogin");
+                });
             },
             selector: {
                 mapContainer: function () { return document.getElementById("mapContainer"); },

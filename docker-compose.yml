@@ -32,10 +32,4 @@ mysql:
     MYSQL_USER: parkping
     MYSQL_PASSWORD: api231
     MYSQL_DATABASE: parkping
-  volumes:
-    - ./data/mysql:/docker-entrypoint-initdb.d
-
-data:
-  build: ./data
-
 

@@ -9,38 +9,62 @@ function mapSpotsData(result) {
 }
 
 function mapSpotData(row) {
-    if (row.distance) {
-        delete row.distance;
-    }
-    row.pictures = row.pictures ? JSON.parse(row.pictures) : {};
-    row.location = {
-        type: "gps",
-        long: row.long,
-        lat: row.lat
+    return {
+        user_id: row.user_id,
+        name: row.name,
+        approved: row.approved,
+        id: row.id,
+        location: {
+            type: "gps",
+            long: row.long,
+            lat: row.lat
+        },
+        pictures: row.pictures ? JSON.parse(row.pictures) : {}
     };
-    delete row.long;
-    delete row.lat;
-    return row;
+}
+
+function mapBookingData(row, prefix) {
+    prefix = prefix || "booking_";
+    return {
+        id: row[prefix + "id"],
+        startDate: row[prefix + "startDate"],
+        endDate: row[prefix + "endDate"]
+    };
+}
+
+function mapScheduleData(row, prefix) {
+    prefix = prefix || "schedule_";
+    return {
+        id: row[prefix + "id"],
+        startDate: row[prefix + "startDate"],
+        endDate: row[prefix + "endDate"]
+    };
 }
 
 function mapSpotsAndSchedulesData(result) {
     var hydratedSpots = {};
     result.forEach(function (row) {
-        if (row.schedule_id && row.schedule_startDate, row.schedule_endDate) {
-            var schedule = {
-                id: schedule_id,
-                startDate: row.schedule_startDate,
-                endDate: row.schedule_endDate
-            };
+        var booking;
+        var schedule;
+        if (row.schedule_id && row.schedule_startDate && row.schedule_endDate) {
+            schedule = mapScheduleData(row, "schedule_");
+        }
+        if (row.booking_id) {
+            booking = mapBookingData(row, "booking_");
         }
 
         if (!hydratedSpots[row.id]) {
             hydratedSpots[row.id] = mapSpotData(row);
         }
 
-        hydratedSpots.schedule = hydratedSpots.schedule || [];
-        if (schedule) {
-            hydratedSpots.schedule.push(schedule);
+        hydratedSpots.schedule = hydratedSpots.schedule || {};
+        hydratedSpots.booking = hydratedSpots.booking || {};
+
+        if (schedule && !hydratedSpots.schedule[schedule.id]) {
+            hydratedSpots.schedule[schedule.id] = schedule;
+        }
+        if (booking && !hydratedSpots.booking[booking.id]) {
+            hydratedSpots.booking[booking.id] = booking;
         }
     });
     return hydratedSpots;
@@ -124,25 +148,37 @@ SpotMySQLRepository.prototype.findByFilters = function (Filters) {
     var params =  [lat, long, lat];
 
     if (!freeOnly) {
-        qry += " FROM spot as s WHERE 1";
+        qry += ", sch.id as schedule_id, sch.startDate as schedule_startDate, sch.endDate as schedule_endDate" +
+            " FROM spot as s LEFT JOIN spot_schedule as sch ON sch.spot_id = s.id WHERE 1";
     } else {
-        startDate = startDate || new Date();
-        qry += ", b.id FROM spot as s " +
-            "LEFT JOIN bookings as b ON (b.spot_id = spot.id) WHERE b.startDate <= ? AND b.endDate "
+        startDate = startDate || (new Date()).valueOf();
+        qry += ", sch.id as schedule_id, sch.startDate as schedule_startDate, sch.endDate as schedule_endDate";
+        qry += ", b.id as booking_id, b.startDate as booking_startDate, b.endDate as booking_endDate FROM spot as s " +
+            "LEFT JOIN bookings as b ON (b.spot_id = s.id) " +
+            "LEFT JOIN spot_schedule as sch ON sch.spot_id = s.id " +
+            "WHERE b.startDate <= ?";
+
+        params.push(startDate);
+
+        if (endDate) {
+            qry += " AND b.endDate <= ?";
+            params.push(endDate);
+        }
     }
 
     if (startDate) {
-        qry +=  " AND s.startDate <= ?";
+        qry +=  " AND sch.startDate <= ?";
         params.push(startDate);
     }
     if (endDate) {
-        qry += " AND s.endDate >= ?";
+        qry += " AND sch.endDate >= ?";
         params.push(endDate);
     }
 
     qry +=" HAVING distance < ?";
     params.push(radius);
 
+    console.log(qry, params);
     return this.connection.query(qry, params).then(mapSpotsData);
 };
 

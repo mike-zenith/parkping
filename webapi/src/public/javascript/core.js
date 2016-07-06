@@ -10,6 +10,9 @@
     app.start = function start() {
         app.herePlatform = new H.service.Platform(app.opts.here.platform);
         app.mapBuilder.init();
+
+        app.authService.autoLogin();
+
         app.route(document.location.hash);
 
         window.addEventListener("hashchange", app.onHashChange, false);
@@ -152,14 +155,13 @@
         function onInvitationSent(e) {
             e.preventDefault();
             e.stopPropagation();
-            app.modal.close();
+            app.modal.close("#loginFormModal");
             app.spinner.on("sendInvitation");
 
             app.authService.register(document.getElementById("sendInvitationName").value)
                 .then(function (user) {
                     app.authService.login(user);
                     app.spinner.off("sendInvitation");
-                    app.navigate("#!/user/" + user.id);
                 })
                 .catch(function () {
                     app.spinner.off("sendInvitation");
@@ -183,30 +185,33 @@
     };
     app.spinner.hide = function hideSpinner() {
         if (app.spinner.modal) {
-            app.spinner.modal.close();
+            app.modal.close(app.spinner.modal);
         }
         app.spinner.modal = null;
     };
     app.spinner.show = function showSpinner() {
-        app.spinner.modal = app.modal.open({
+        app.modal.open({
             target: "#spinner",
             effect: "blur",
             speed: 300
         });
+        app.spinner.modal = "#spinner";
     };
-
 
     app.navigate = function navigate(toHash) {
         window.location.hash = toHash;
     };
 
-    app.modal = Custombox;
+    app.modal = {};
     app.modal.defaults = {
         escKey: false,
         overlayClose: false
     };
+    app.modal.close = function (target, cb) {
+        return Custombox.close(target, cb);
+    };
     app.modal.open = function (opts) {
-        return Custombox.apply(Custombox, Object.assign({}, app.modal.defaults, opts || {}));
+        return Custombox.open(Object.assign({}, app.modal.defaults, opts || {}));
     };
 
     app.spotFinderService = {};
@@ -229,13 +234,25 @@
             data: { username: username }
         });
     };
+    app.authService.getUserById = function (uid) {
+        return app.request({
+            url: "/user/" + uid,
+            method: "get",
+            type: "json"
+        });
+    };
     app.authService.login = function loginUser(user) {
         app.authService.user = user;
         app.opts.storeLogin(user);
+        app.navigate("#!/user/" + user.id);
     };
     app.authService.logout = function logoutUser(user) {
         app.authService.user = null;
         app.opts.destroyLogin(user);
+        app.navigate("#!/");
+    };
+    app.authService.autoLogin = function autoLogin() {
+        app.opts.autoLogin();
     };
 
     app.request = function request(opts) {

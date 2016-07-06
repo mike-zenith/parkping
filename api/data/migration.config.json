@@ -1,0 +1,12 @@
+{
+  "env": {
+    "driver": "mysql",
+    "user": {"ENV": "MYSQL_ENV_MYSQL_USER"},
+    "password": {"ENV": "MYSQL_ENV_MYSQL_PASSWORD"},
+    "host": {"ENV": "MYSQL_PORT_3306_TCP_ADDR"},
+    "port": {"ENV": "MYSQL_PORT_3306_TCP_PORT"},
+    "database": {"ENV": "MYSQL_ENV_MYSQL_DATABASE"},
+    "multipleStatements": true
+  },
+  "sql-file": true
+}
