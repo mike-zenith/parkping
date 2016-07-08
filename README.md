@@ -1,6 +1,6 @@
 ParkPing
 -
-This is a one day hackathon project for [http://devpost.com/software/parkping](Smart Transportation & Energy Hackathon).
+This is a one day hackathon project for [Smart Transportation & Energy Hackathon](http://devpost.com/software/parkping).
 
 Frontend and backend is incomplete.
 
